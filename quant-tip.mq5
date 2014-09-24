@@ -1,15 +1,15 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.09.25   01:00";
+string ver = "ver.2014.09.24   05:00";
 
 //--- input parameters
 input double size = 0.18;
 
-bool test =true;
+bool test = true;
 
 int real_limit = 10000;
-int full_limit = 96000;
+int full_limit = 96500;
 int limit;
 
 int DonchianPeriod = 45; //Period of averaging
@@ -22,7 +22,7 @@ int LC_GBPUSD = 24;
 int LC_USDCHF = 24;
 
 int Spike;
-int Spike_EURUSD = 24;//30
+int Spike_EURUSD = 22;// 24;//30
 int Spike_USDJPY = 15;//15 /23
 int Spike_GBPUSD = 22;
 int Spike_USDCHF = 25;
@@ -38,7 +38,6 @@ double sumWeek;
 
 int trades;
 int days;
-
 
 int winDays;
 int loseDays;
@@ -356,7 +355,7 @@ int OnCalculate(const int rates_total,
   trades = 0;
   
   days = 0;
-
+  
   winDays =0;
   loseDays =0;
 
@@ -473,6 +472,7 @@ int OnCalculate(const int rates_total,
         if (D >= Spike)
         {
           if (dma < 0)
+          {
             if (open[i] > U)
             {
                if(pos == "flat")    
@@ -480,9 +480,18 @@ int OnCalculate(const int rates_total,
                
                if(pos == "long")
                sign = "flat";       
-            } 
+            }
+            
+            if (open[i] < L)
+            {         
+               if(pos == "short")
+               sign0 = "longFlat";       
+            }
+            
+          } 
 
           if (dma > 0)
+          {
             if (open[i] < L)
              {
                if(pos == "flat")    
@@ -491,6 +500,15 @@ int OnCalculate(const int rates_total,
                if(pos == "short")
                sign = "flat";       
             }
+            
+            if (open[i] > U)
+            { 
+               if(pos == "long")
+               sign0 = "shortFlat";       
+            }
+            
+            
+          }
         }
 
       }
@@ -548,6 +566,7 @@ int OnCalculate(const int rates_total,
         if (D >= Spike)
         {
           if (dma < 0)
+          {
             if (open[i] > U)
             {
                if(pos == "flat")    
@@ -557,9 +576,16 @@ int OnCalculate(const int rates_total,
                sign = "flat";       
             }
             
-              
+            if (open[i] < L)
+            {         
+               if(pos == "short")
+               sign0 = "longFlat";       
+            }
+            
+          } 
 
           if (dma > 0)
+          {
             if (open[i] < L)
              {
                if(pos == "flat")    
@@ -568,8 +594,16 @@ int OnCalculate(const int rates_total,
                if(pos == "short")
                sign = "flat";       
             }
+            
+            if (open[i] > U)
+            { 
+               if(pos == "long")
+               sign0 = "shortFlat";       
+            }
+            
+            
+          }
         }
-
       }
       if ((hhmm == 1615))
       {
@@ -590,6 +624,7 @@ int OnCalculate(const int rates_total,
         if (D >= Spike)
         {
           if (dma < 0)
+          {
             if (open[i] > U)
             {
                if(pos == "flat")    
@@ -599,9 +634,16 @@ int OnCalculate(const int rates_total,
                sign = "flat";       
             }
             
-              
+            if (open[i] < L)
+            {         
+               if(pos == "short")
+               sign0 = "longFlat";       
+            }
+            
+          } 
 
           if (dma > 0)
+          {
             if (open[i] < L)
              {
                if(pos == "flat")    
@@ -610,6 +652,15 @@ int OnCalculate(const int rates_total,
                if(pos == "short")
                sign = "flat";       
             }
+            
+            if (open[i] > U)
+            { 
+               if(pos == "long")
+               sign0 = "shortFlat";       
+            }
+            
+            
+          }
         }
 
       }
@@ -624,9 +675,10 @@ int OnCalculate(const int rates_total,
 
       if ((hhmm >= 1700) && (hhmm <= 1705))
       {
-         if (D >= Spike)
+        if (D >= Spike)
         {
           if (dma < 0)
+          {
             if (open[i] > U)
             {
                if(pos == "flat")    
@@ -636,9 +688,16 @@ int OnCalculate(const int rates_total,
                sign = "flat";       
             }
             
-              
+            if (open[i] < L)
+            {         
+               if(pos == "short")
+               sign0 = "longFlat";       
+            }
+            
+          } 
 
           if (dma > 0)
+          {
             if (open[i] < L)
              {
                if(pos == "flat")    
@@ -647,6 +706,15 @@ int OnCalculate(const int rates_total,
                if(pos == "short")
                sign = "flat";       
             }
+            
+            if (open[i] > U)
+            { 
+               if(pos == "long")
+               sign0 = "shortFlat";       
+            }
+            
+            
+          }
         }
 
       }
@@ -660,9 +728,10 @@ int OnCalculate(const int rates_total,
       
       if ((hhmm >= 1715) && (hhmm <= 1745))
       {
-         if (D >= Spike)
+        if (D >= Spike)
         {
           if (dma < 0)
+          {
             if (open[i] > U)
             {
                if(pos == "flat")    
@@ -672,9 +741,16 @@ int OnCalculate(const int rates_total,
                sign = "flat";       
             }
             
-              
+            if (open[i] < L)
+            {         
+               if(pos == "short")
+               sign0 = "longFlat";       
+            }
+            
+          } 
 
           if (dma > 0)
+          {
             if (open[i] < L)
              {
                if(pos == "flat")    
@@ -683,6 +759,15 @@ int OnCalculate(const int rates_total,
                if(pos == "short")
                sign = "flat";       
             }
+            
+            if (open[i] > U)
+            { 
+               if(pos == "long")
+               sign0 = "shortFlat";       
+            }
+            
+            
+          }
         }
 
       }
@@ -728,6 +813,20 @@ int OnCalculate(const int rates_total,
       if ((sign0 == "short") && (d < 0))
       {
         sign = "short";
+
+        strike = open[i];
+      }
+      
+      if ((sign0 == "longFlat") && (d > 0))
+      {
+        sign = "flat";
+
+        strike = open[i];
+      }
+
+      if ((sign0 == "shortFlat") && (d < 0))
+      {
+        sign = "flat";
 
         strike = open[i];
       }
@@ -1095,7 +1194,8 @@ int OnCalculate(const int rates_total,
     //--- set color
     ObjectSetInteger(0, "trades", OBJPROP_COLOR, clrWhite);
     
-     ObjectCreate(0, "winloserate", OBJ_LABEL, 0, 0, 0);
+    
+    ObjectCreate(0, "winloserate", OBJ_LABEL, 0, 0, 0);
     ObjectSetInteger(0, "winloserate", OBJPROP_XDISTANCE, 10);
     ObjectSetInteger(0, "winloserate", OBJPROP_YDISTANCE, 225);
     //--- set the text
@@ -1106,6 +1206,7 @@ int OnCalculate(const int rates_total,
     ObjectSetInteger(0, "winloserate", OBJPROP_FONTSIZE, 10);
     //--- set color
     ObjectSetInteger(0, "winloserate", OBJPROP_COLOR, clrWhite);
+    
   }
   ObjectCreate(0, "rt", OBJ_LABEL, 0, 0, 0);
   ObjectSetInteger(0, "rt", OBJPROP_XDISTANCE, 200);
@@ -1187,9 +1288,10 @@ double showPips(datetime timei, double closei, double pips, string side, double 
 void showPipsDay(datetime timei, double closei, double pips)
 {
   double pips1 = MathRound(pips * 10) / 10;
-
+  
   if(pips>0) winDays++;
   else loseDays++;
+
 
   ObjectCreate(0, "pipsD" + timei, OBJ_TEXT, 0, timei, closei + 20 * pip);
   //--- set the text
