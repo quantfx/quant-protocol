@@ -1,15 +1,15 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.09.25   01:00";
+string ver = "ver.2014.09.25   07:30";
 
 //--- input parameters
 input double size = 0.18;
 
-bool test =true;
+bool test =false;
 
 int real_limit = 10000;
-int full_limit = 96000;
+int full_limit = 99000;
 int limit;
 
 int DonchianPeriod = 45; //Period of averaging
@@ -17,7 +17,7 @@ int MAperiod = 25000;
 
 int LC;
 int LC_EURUSD = 24; //24
-int LC_USDJPY = 16; //19
+int LC_USDJPY = 19; //19
 int LC_GBPUSD = 24;
 int LC_USDCHF = 24;
 
