@@ -1,31 +1,31 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.09.25   07:30";
+string ver = "ver.2014.09.28   02:45";
 
 //--- input parameters
-input double size = 0.18;
+input double size = 0.12;
 
-bool test =false;
+bool test = true;
 
 int real_limit = 10000;
-int full_limit = 99000;
+int full_limit = 97000;
 int limit;
 
-int DonchianPeriod = 45; //Period of averaging
+int DonchianPeriod = 47; //Period of averaging
 int MAperiod = 25000;
 
 int LC;
 int LC_EURUSD = 24; //24
 int LC_USDJPY = 19; //19
 int LC_GBPUSD = 24;
-int LC_USDCHF = 24;
+int LC_EURJPY = 19;
 
 int Spike;
-int Spike_EURUSD = 24;//30
-int Spike_USDJPY = 15;//15 /23
-int Spike_GBPUSD = 22;
-int Spike_USDCHF = 25;
+int Spike_EURUSD = 24; //30
+int Spike_USDJPY = 15; //15 /23
+int Spike_GBPUSD = 24;
+int Spike_EURJPY = 15;
 
 int tradeLimitTK = 99;
 int tradeLimitLD = 99;
@@ -193,15 +193,15 @@ void OnInit()
 
   if (Period() != PERIOD_M1)
   {
-     Alert("timeframe must be 1 Min Chart! to trade");
+    Alert("timeframe must be 1 Min Chart! to trade");
   }
- 
+
   EventSetTimer(1);
 
   ObjectsDeleteAll(0, 0, -1);
 
 
-  if (Symbol() == "USDJPY")
+  if ((Symbol() == "USDJPY") || (Symbol() == "EURJPY"))
   {
     pip = 0.01;
   }
@@ -225,10 +225,10 @@ void OnInit()
     LC = LC_GBPUSD;
     Spike = Spike_GBPUSD;
   }
-  if (Symbol() == "USDCHF")
+  if (Symbol() == "EURJPY")
   {
-    LC = LC_USDCHF;
-    Spike = Spike_USDCHF;
+    LC = LC_EURJPY;
+    Spike = Spike_EURJPY;
   }
 
 
@@ -354,11 +354,11 @@ int OnCalculate(const int rates_total,
   double sumTotal = 0;
 
   trades = 0;
-  
+
   days = 0;
 
-  winDays =0;
-  loseDays =0;
+  winDays = 0;
+  loseDays = 0;
 
   double lossCut = 999;
 
@@ -407,607 +407,481 @@ int OnCalculate(const int rates_total,
 
 
       ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-  
+
       ObjectSetInteger(0, "vline" + time[i], OBJPROP_WIDTH, 3);
-      
-      ObjectCreate(0, "dt" + time[i], OBJ_TEXT, 0, time[i], close[i]-5*pip);
+
+      ObjectCreate(0, "dt" + time[i], OBJ_TEXT, 0, time[i], close[i] - 5 * pip);
       //--- set the text
       ObjectSetString(0, "dt" + time[i], OBJPROP_TEXT, TimeToString(time[i], TIME_DATE));
       //--- set text font
       ObjectSetInteger(0, "dt" + time[i], OBJPROP_FONTSIZE, 20);
       //--- set color
       ObjectSetInteger(0, "dt" + time[i], OBJPROP_COLOR, clrGray);
-      
-      ObjectCreate(0, "dtw" + time[i], OBJ_TEXT, 0, time[i], close[i]-15*pip);
+
+      ObjectCreate(0, "dtw" + time[i], OBJ_TEXT, 0, time[i], close[i] - 15 * pip);
       //--- set the text
       ObjectSetString(0, "dtw" + time[i], OBJPROP_TEXT, DayToString(dayofweek));
       //--- set text font
       ObjectSetInteger(0, "dtw" + time[i], OBJPROP_FONTSIZE, 20);
       //--- set color
       ObjectSetInteger(0, "dtw" + time[i], OBJPROP_COLOR, clrGray);
-      
-      if(date == 1)
+
+      if (date == 1)
       {
-       ObjectCreate(0, "dt1" + time[i], OBJ_TEXT, 0, time[i], close[i]-35*pip);
-       //--- set the text
-       ObjectSetString(0, "dt1" + time[i], OBJPROP_TEXT, "new month, checkout EmploymentNumber date & MT5 demo Account");
-       //--- set text font
-       ObjectSetInteger(0, "dt1" + time[i], OBJPROP_FONTSIZE, 10);
-       //--- set color
-       ObjectSetInteger(0, "dt1" + time[i], OBJPROP_COLOR, Orange);
+        ObjectCreate(0, "dt1" + time[i], OBJ_TEXT, 0, time[i], close[i] - 35 * pip);
+        //--- set the text
+        ObjectSetString(0, "dt1" + time[i], OBJPROP_TEXT, "new month, checkout EmploymentNumber date & MT5 demo Account");
+        //--- set text font
+        ObjectSetInteger(0, "dt1" + time[i], OBJPROP_FONTSIZE, 10);
+        //--- set color
+        ObjectSetInteger(0, "dt1" + time[i], OBJPROP_COLOR, Orange);
       }
 
     }
 
-   
-      UpperBuffer[i] = high[iHighest(high, DonchianPeriod, i)];
-      LowerBuffer[i] = low[iLowest(low, DonchianPeriod, i)];
 
-      double D = (UpperBuffer[i] - LowerBuffer[i]) / pip;
+    UpperBuffer[i] = high[iHighest(high, DonchianPeriod, i)];
+    LowerBuffer[i] = low[iLowest(low, DonchianPeriod, i)];
 
-      double L = LowerBuffer[i] + (UpperBuffer[i] - LowerBuffer[i]) * 0.1;
+    double D = (UpperBuffer[i] - LowerBuffer[i]) / pip;
 
-      double U = UpperBuffer[i] - (UpperBuffer[i] - LowerBuffer[i]) * 0.1;
+    double L = LowerBuffer[i] + (UpperBuffer[i] - LowerBuffer[i]) * 0.1;
+
+    double U = UpperBuffer[i] - (UpperBuffer[i] - LowerBuffer[i]) * 0.1;
 
 
-      if (hhmm == 0900)
-      {
-        ld0 = open[i];
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
+    if (hhmm == 0900)
+    {
+      ld0 = open[i];
+      ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
+      ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
 
-      }
+    }
 
-      //===== sign0 stream ====================================================
-    
-      
-   
-      if ((hhmm <= 1600) || (hhmm >= 1700))
-      { 
-        if ((mm == 00) || (mm == 30))
-        { 
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-        }
-      
-        if (D >= Spike)
+    //===== sign0 stream ====================================================
+
+    if ((mm == 00) || (mm == 30))
+    {
+      ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
+      ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
+    }
+
+    if (D >= Spike)
+    {
+      if (dma < 0)
+        if (open[i] > U)
         {
-          if (dma < 0)
-            if (open[i] > U)
-            {
-               if(pos == "flat")    
-               sign0 = "short";
-               
-               if(pos == "long")
-               sign = "flat";       
-            } 
-
-          if (dma > 0)
-            if (open[i] < L)
-             {
-               if(pos == "flat")    
-               sign0 = "long";
-               
-               if(pos == "short")
-               sign = "flat";       
-            }
-        }
-
-      }
-       
-      
-      //----------
-
-      if (hhmm == 0935)
-      {
-
-        tz = "LD";
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-
-      }
-
-      if ((hhmm == 0935))
-      {
-
-        double d0 = open[i] - ld0;
-        double d1 = open[i] - open[i - 20];
-
-        double d01;
-        if (MathAbs(d0) > MathAbs(d1))
-          d01 = d0;
-        else
-          d01 = d1;
- 
-        if (pos == "flat")
-        {
-          if  (dma < 0) 
+          if (pos == "flat")
             sign0 = "short";
-          if  (dma > 0) 
+
+          if (pos == "long")
+            sign = "flat";
+        }
+
+      if (dma > 0)
+        if (open[i] < L)
+        {
+          if (pos == "flat")
             sign0 = "long";
+
+          if (pos == "short")
+            sign = "flat";
         }
- 
-      }
+    }
 
-      if (hhmm == 1500)
+
+    //----------
+
+    if (hhmm == 0935)
+    {
+
+      tz = "LD";
+      ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
+      ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
+
+    }
+
+    if ((hhmm == 0935))
+    {
+
+      double d0 = open[i] - ld0;
+      double d1 = open[i] - open[i - 20];
+
+      double d01;
+      if (MathAbs(d0) > MathAbs(d1))
+        d01 = d0;
+      else
+        d01 = d1;
+
+      if (pos == "flat")
       {
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-        tz = "NY";
+        if (dma < 0)
+          sign0 = "short";
+        if (dma > 0)
+          sign0 = "long";
       }
 
-      if ((hhmm == 1545))
+    }
+
+    if (hhmm == 1500)
+    {
+      ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
+      ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
+      tz = "NY";
+    }
+
+    if ((hhmm == 1545))
+    {
+
+      ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
+      ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
+    }
+
+
+    if ((hhmm == 1615))
+    {
+
+      ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
+      ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
+    }
+
+    if ((hhmm == 1630))
+    {
+
+      ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
+      ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
+    }
+
+    if (hhmm == 1700)
+    {
+      tz = "NY2";
+      ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
+      ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
+    }
+    //  if (pos == "flat")
+
+
+
+    if ((hhmm >= 2000))
+    {
+      tz = "NY3";
+    }
+
+    if (hhmm >= 2300)
+    {
+      if (dayofweek == 5)
       {
-
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-
-      if ((hhmm >= 1535) && (hhmm <= 1615))
-      {
-        if (D >= Spike)
-        {
-          if (dma < 0)
-            if (open[i] > U)
-            {
-               if(pos == "flat")    
-               sign0 = "short";
-               
-               if(pos == "long")
-               sign = "flat";       
-            }
-            
-              
-
-          if (dma > 0)
-            if (open[i] < L)
-             {
-               if(pos == "flat")    
-               sign0 = "long";
-               
-               if(pos == "short")
-               sign = "flat";       
-            }
-        }
-
-      }
-      if ((hhmm == 1615))
-      {
-
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-      
-      if ((hhmm == 1630))
-      {
-
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-
-      if ((hhmm >= 1630) && (hhmm <= 1635))
-      {
-        if (D >= Spike)
-        {
-          if (dma < 0)
-            if (open[i] > U)
-            {
-               if(pos == "flat")    
-               sign0 = "short";
-               
-               if(pos == "long")
-               sign = "flat";       
-            }
-            
-              
-
-          if (dma > 0)
-            if (open[i] < L)
-             {
-               if(pos == "flat")    
-               sign0 = "long";
-               
-               if(pos == "short")
-               sign = "flat";       
-            }
-        }
-
-      }
-
-      if (hhmm == 1700)
-      {
-        tz = "NY2";
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-      //  if (pos == "flat")
-
-      if ((hhmm >= 1700) && (hhmm <= 1705))
-      {
-         if (D >= Spike)
-        {
-          if (dma < 0)
-            if (open[i] > U)
-            {
-               if(pos == "flat")    
-               sign0 = "short";
-               
-               if(pos == "long")
-               sign = "flat";       
-            }
-            
-              
-
-          if (dma > 0)
-            if (open[i] < L)
-             {
-               if(pos == "flat")    
-               sign0 = "long";
-               
-               if(pos == "short")
-               sign = "flat";       
-            }
-        }
-
-      }
-
-
-      if (hhmm == 1730)
-      { 
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-      
-      if ((hhmm >= 1715) && (hhmm <= 1745))
-      {
-         if (D >= Spike)
-        {
-          if (dma < 0)
-            if (open[i] > U)
-            {
-               if(pos == "flat")    
-               sign0 = "short";
-               
-               if(pos == "long")
-               sign = "flat";       
-            }
-            
-              
-
-          if (dma > 0)
-            if (open[i] < L)
-             {
-               if(pos == "flat")    
-               sign0 = "long";
-               
-               if(pos == "short")
-               sign = "flat";       
-            }
-        }
-
-      }
-
-
-      if ((hhmm >= 2000))
-      {
-        tz = "NY3";
-      }
-
-      if (hhmm >= 2300)
-      {
-        if (dayofweek == 5)
-        {
-          sign = "flat"; // must be directly to sign not sign0
-          sign0 = "flat";
-          strike = open[i];
-        }
-      }
-
-
-      if (hhmm == 2305)
-      {
-        showPipsDay(time[i-50], close[i], sumDay);
-
-      }
-
-      //=====================================================================
-
-      //sign stream =========================
-
-      double d = open[i] - open[i - 6];
-
-      //-----------
-
-      if ((sign0 == "long") && (d > 0))
-      {
-        sign = "long";
-
+        sign = "flat"; // must be directly to sign not sign0
+        sign0 = "flat";
         strike = open[i];
       }
+    }
 
-      if ((sign0 == "short") && (d < 0))
+
+    if (hhmm == 2305)
+    {
+      showPipsDay(time[i - 50], close[i], sumDay);
+
+    }
+
+    //=====================================================================
+
+    //sign stream =========================
+
+    double d = open[i] - open[i - 6];
+
+    //-----------
+
+    if ((sign0 == "long") && (d > 0))
+    {
+      sign = "long";
+
+      strike = open[i];
+    }
+
+    if ((sign0 == "short") && (d < 0))
+    {
+      sign = "short";
+
+      strike = open[i];
+    }
+
+    //------------
+
+
+
+    //===============================
+
+
+
+    //losscut stream =========================
+
+    if (pos == "long")
+    {
+
+      if (high[i - 1] > edge)
+        edge = high[i - 1];
+
+      double lcT = edge - LC * pip;
+
+      lossCut = NormalizeDouble(lcT, 5);
+
+      ObjectCreate(0, "taglc" + time[i], OBJ_TREND, 0, time[i], lossCut, time[i - 1], lossCut);
+      //--- set text font
+      ObjectSetInteger(0, "taglc" + time[i], OBJPROP_WIDTH, 2);
+      //--- set color
+      ObjectSetInteger(0, "taglc" + time[i], OBJPROP_COLOR, clrDeepPink);
+
+
+      //----losscut hit
+
+      if (low[i] <= lossCut)
       {
-        sign = "short";
+        if (tz == "NY3")
+        {
+          if ((tCountNY3 < tradeLimitNY3) && (dma < 0))
+            sign = "short";
+          else
+            sign = "flat";
+        }
+        else if (tz == "NY2")
+        {
+          if ((tCountNY2 < tradeLimitNY2) && (dma < 0))
+            sign = "short";
+          else
+            sign = "flat";
+        }
+        else if (tz == "NY")
+        {
+          if ((tCountNY < tradeLimitNY) && (dma < 0))
+            sign = "short";
+          else
+            sign = "flat";
+        }
+        else if (tz == "LD")
+        {
+          if ((tCountLD < tradeLimitLD) && (dma < 0))
+            sign = "short";
+          else
+            sign = "flat";
+        }
+        else
+        {
+          if ((tCountTK < tradeLimitTK) && (dma < 0))
+            sign = "short";
+          else
+            sign = "flat";
+        }
+        strike = lossCut;
 
-        strike = open[i];
+        lossCut = 999;
       }
 
-      //------------
+
+    }
+
+    if (pos == "short")
+    {
+
+      if (low[i - 1] < edge)
+        edge = low[i - 1];
+
+      double lcT = edge + LC * pip;
+
+      lossCut = NormalizeDouble(lcT, 5);
+
+      ObjectCreate(0, "taglc" + time[i], OBJ_TREND, 0, time[i], lossCut, time[i - 1], lossCut);
+      //--- set text font
+      ObjectSetInteger(0, "taglc" + time[i - 1], OBJPROP_WIDTH, 2);
+      //--- set color
+      ObjectSetInteger(0, "taglc" + time[i - 1], OBJPROP_COLOR, clrAqua);
 
 
+      //----losscut hit
 
-      //===============================
+      if (high[i] >= lossCut)
+      {
+        if (tz == "NY3")
+        {
+          if ((tCountNY3 < tradeLimitNY3) && (dma > 0))
+            sign = "long";
+          else
+            sign = "flat";
+        }
+        else if (tz == "NY2")
+        {
+          if ((tCountNY2 < tradeLimitNY2) && (dma > 0))
+            sign = "long";
+          else
+            sign = "flat";
+        }
+        else if (tz == "NY")
+        {
+          if ((tCountNY < tradeLimitNY) && (dma > 0))
+            sign = "long";
+          else
+            sign = "flat";
+        }
+        else if (tz == "LD")
+        {
+          if ((tCountLD < tradeLimitLD) && (dma > 0))
+            sign = "long";
+          else
+            sign = "flat";
+        }
+        else
+        {
+          if ((tCountTK < tradeLimitTK) && (dma > 0))
+            sign = "long";
+          else
+            sign = "flat";
+        }
+
+        strike = lossCut;
+
+        lossCut = 999;
+      }
+
+    }
+
+    //==========================
 
 
+    //!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      //losscut stream =========================
 
-      if (pos == "long")
+    //position stream =========================
+
+    if (pos != sign)
+    {
+      if (sign == "flat")
       {
 
-        if (high[i - 1] > edge)
-          edge = high[i - 1];
+        pos = sign;
+        sign0 = "flat";
 
-        double lcT = edge - LC * pip;
-
-        lossCut = NormalizeDouble(lcT, 5);
-
-        ObjectCreate(0, "taglc" + time[i], OBJ_TREND, 0, time[i], lossCut, time[i - 1], lossCut);
-        //--- set text font
-        ObjectSetInteger(0, "taglc" + time[i], OBJPROP_WIDTH, 2);
-        //--- set color
-        ObjectSetInteger(0, "taglc" + time[i], OBJPROP_COLOR, clrDeepPink);
-
-
-        //----losscut hit
-
-        if (low[i] <= lossCut)
+        if (entry != 0)
         {
-          if (tz == "NY3")
+          string side;
+          if (edge > open[i]) //long
           {
-            if ((tCountNY3 < tradeLimitNY3) && (dma < 0))
-              sign = "short";
-            else
-              sign = "flat";
-          }
-          else if (tz == "NY2")
-          {
-            if ((tCountNY2 < tradeLimitNY2) && (dma < 0))
-              sign = "short";
-            else
-              sign = "flat";
-          }
-          else if (tz == "NY")
-          {
-            if ((tCountNY < tradeLimitNY) && (dma < 0))
-              sign = "short";
-            else
-              sign = "flat";
-          }
-          else if (tz == "LD")
-          {
-            if ((tCountLD < tradeLimitLD) && (dma < 0))
-              sign = "short";
-            else
-              sign = "flat";
+            pips = (strike - entry) / pip;
+            side = "L";
           }
           else
           {
-            if ((tCountTK < tradeLimitTK) && (dma < 0))
-              sign = "short";
-            else
-              sign = "flat";
+            pips = (entry - strike) / pip;
+            side = "S";
           }
-          strike = lossCut;
 
+          sumTotal = showPips(time[i], strike, pips, side, sumTotal);
+
+          entry = 0;
           lossCut = 999;
-        }
 
+          ObjectCreate(0, "tagstop" + time[i], OBJ_ARROW_LEFT_PRICE, 0, time[i], strike);
+          //--- set text font
+          ObjectSetInteger(0, "tagstop" + time[i], OBJPROP_WIDTH, 3);
+          //--- set color
+          ObjectSetInteger(0, "tagstop" + time[i], OBJPROP_COLOR, clrWhite);
 
-      }
-
-      if (pos == "short")
-      {
-
-        if (low[i - 1] < edge)
-          edge = low[i - 1];
-
-        double lcT = edge + LC * pip;
-
-        lossCut = NormalizeDouble(lcT, 5);
-
-        ObjectCreate(0, "taglc" + time[i], OBJ_TREND, 0, time[i], lossCut, time[i - 1], lossCut);
-        //--- set text font
-        ObjectSetInteger(0, "taglc" + time[i - 1], OBJPROP_WIDTH, 2);
-        //--- set color
-        ObjectSetInteger(0, "taglc" + time[i - 1], OBJPROP_COLOR, clrAqua);
-
-
-        //----losscut hit
-
-        if (high[i] >= lossCut)
-        {
-          if (tz == "NY3")
-          {
-            if ((tCountNY3 < tradeLimitNY3) && (dma > 0))
-              sign = "long";
-            else
-              sign = "flat";
-          }
-          else if (tz == "NY2")
-          {
-            if ((tCountNY2 < tradeLimitNY2) && (dma > 0))
-              sign = "long";
-            else
-              sign = "flat";
-          }
-          else if (tz == "NY")
-          {
-            if ((tCountNY < tradeLimitNY) && (dma > 0))
-              sign = "long";
-            else
-              sign = "flat";
-          }
-          else if (tz == "LD")
-          {
-            if ((tCountLD < tradeLimitLD) && (dma > 0))
-              sign = "long";
-            else
-              sign = "flat";
-          }
-          else
-          {
-            if ((tCountTK < tradeLimitTK) && (dma > 0))
-              sign = "long";
-            else
-              sign = "flat";
-          }
-
-          strike = lossCut;
-
-          lossCut = 999;
+          ObjectCreate(0, "taglc" + time[i], OBJ_TREND, 0, time[i], lossCut, time[i - 1], lossCut);
+          //--- set text font
+          ObjectSetInteger(0, "taglc" + time[i], OBJPROP_WIDTH, 2);
+          //--- set color
+          ObjectSetInteger(0, "taglc" + time[i], OBJPROP_COLOR, clrAqua);
         }
 
       }
 
-      //==========================
-
-
-      //!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-      //position stream =========================
-
-      if (pos != sign)
+      else if (((tz == "TK") && (tCountTK < tradeLimitTK)) ||
+        ((tz == "LD") && (tCountLD < tradeLimitLD)) ||
+        ((tz == "NY") && (tCountNY < tradeLimitNY)) ||
+        ((tz == "NY2") && (tCountNY2 < tradeLimitNY2)) ||
+        ((tz == "NY3") && (tCountNY3 < tradeLimitNY3)))
       {
-        if (sign == "flat")
+        if (sign == "long")
         {
-
           pos = sign;
+
+          if (tz == "NY3")
+            tCountNY3++;
+          else if (tz == "NY2")
+            tCountNY2++;
+          else if (tz == "NY")
+            tCountNY++;
+          else if (tz == "LD")
+            tCountLD++;
+          else
+            tCountTK++;
+
           sign0 = "flat";
 
           if (entry != 0)
           {
-            string side;
-            if (edge > open[i]) //long
-            {
-              pips = (strike - entry) / pip;
-              side = "L";
-            }
-            else
-            {
-              pips = (entry - strike) / pip;
-              side = "S";
-            }
-
-            sumTotal = showPips(time[i], strike, pips, side, sumTotal);
-
-            entry = 0;
-            lossCut = 999;
-
-            ObjectCreate(0, "tagstop" + time[i], OBJ_ARROW_LEFT_PRICE, 0, time[i], strike);
-            //--- set text font
-            ObjectSetInteger(0, "tagstop" + time[i], OBJPROP_WIDTH, 3);
-            //--- set color
-            ObjectSetInteger(0, "tagstop" + time[i], OBJPROP_COLOR, clrWhite);
-
-            ObjectCreate(0, "taglc" + time[i], OBJ_TREND, 0, time[i], lossCut, time[i - 1], lossCut);
-            //--- set text font
-            ObjectSetInteger(0, "taglc" + time[i], OBJPROP_WIDTH, 2);
-            //--- set color
-            ObjectSetInteger(0, "taglc" + time[i], OBJPROP_COLOR, clrAqua);
+            pips = (entry - strike) / pip;
+            sumTotal = showPips(time[i], strike, pips, "S", sumTotal);
           }
+
+          entry = strike;
+          lossCut = NormalizeDouble(entry - LC * pip, 5);
+
+          edge = entry;
+
+          ObjectCreate(0, "tag" + time[i], OBJ_ARROW_LEFT_PRICE, 0, time[i], strike);
+          //--- set text font
+          ObjectSetInteger(0, "tag" + time[i], OBJPROP_WIDTH, 3);
+          //--- set color
+          ObjectSetInteger(0, "tag" + time[i], OBJPROP_COLOR, clrAqua);
 
         }
-
-        else if (((tz == "TK") && (tCountTK < tradeLimitTK)) ||
-          ((tz == "LD") && (tCountLD < tradeLimitLD)) ||
-          ((tz == "NY") && (tCountNY < tradeLimitNY)) ||
-          ((tz == "NY2") && (tCountNY2 < tradeLimitNY2)) ||
-          ((tz == "NY3") && (tCountNY3 < tradeLimitNY3)))
+        if (sign == "short")
         {
-          if (sign == "long")
+          pos = sign;
+
+          if (tz == "NY3")
+            tCountNY3++;
+          else if (tz == "NY2")
+            tCountNY2++;
+          else if (tz == "NY")
+            tCountNY++;
+          else if (tz == "LD")
+            tCountLD++;
+          else
+            tCountTK++;
+
+
+          sign0 = "flat";
+
+          if (entry != 0)
           {
-            pos = sign;
-
-            if (tz == "NY3")
-              tCountNY3++;
-            else if (tz == "NY2")
-              tCountNY2++;
-            else if (tz == "NY")
-              tCountNY++;
-            else if (tz == "LD")
-              tCountLD++;
-            else
-              tCountTK++;
-
-            sign0 = "flat";
-
-            if (entry != 0)
-            {
-              pips = (entry - strike) / pip;
-              sumTotal = showPips(time[i], strike, pips, "S", sumTotal);
-            }
-
-            entry = strike;
-            lossCut = NormalizeDouble(entry - LC * pip, 5);
-
-            edge = entry;
-
-            ObjectCreate(0, "tag" + time[i], OBJ_ARROW_LEFT_PRICE, 0, time[i], strike);
-            //--- set text font
-            ObjectSetInteger(0, "tag" + time[i], OBJPROP_WIDTH, 3);
-            //--- set color
-            ObjectSetInteger(0, "tag" + time[i], OBJPROP_COLOR, clrAqua);
-
+            pips = (strike - entry) / pip;
+            sumTotal = showPips(time[i], strike, pips, "L", sumTotal);
           }
-          if (sign == "short")
-          {
-            pos = sign;
 
-            if (tz == "NY3")
-              tCountNY3++;
-            else if (tz == "NY2")
-              tCountNY2++;
-            else if (tz == "NY")
-              tCountNY++;
-            else if (tz == "LD")
-              tCountLD++;
-            else
-              tCountTK++;
+          entry = strike;
+          lossCut = NormalizeDouble(entry + LC * pip, 5);
 
+          edge = entry;
 
-            sign0 = "flat";
+          ObjectCreate(0, "tag" + time[i], OBJ_ARROW_LEFT_PRICE, 0, time[i], strike);
+          //--- set text font
+          ObjectSetInteger(0, "tag" + time[i], OBJPROP_WIDTH, 3);
+          //--- set color
+          ObjectSetInteger(0, "tag" + time[i], OBJPROP_COLOR, clrDeepPink);
 
-            if (entry != 0)
-            {
-              pips = (strike - entry) / pip;
-              sumTotal = showPips(time[i], strike, pips, "L", sumTotal);
-            }
-
-            entry = strike;
-            lossCut = NormalizeDouble(entry + LC * pip, 5);
-
-            edge = entry;
-
-            ObjectCreate(0, "tag" + time[i], OBJ_ARROW_LEFT_PRICE, 0, time[i], strike);
-            //--- set text font
-            ObjectSetInteger(0, "tag" + time[i], OBJPROP_WIDTH, 3);
-            //--- set color
-            ObjectSetInteger(0, "tag" + time[i], OBJPROP_COLOR, clrDeepPink);
-
-            ObjectCreate(0, "taglc" + time[i], OBJ_TREND, 0, time[i], lossCut, time[i - 1], lossCut);
-            //--- set text font
-            ObjectSetInteger(0, "taglc" + time[i], OBJPROP_WIDTH, 2);
-            //--- set color
-            ObjectSetInteger(0, "taglc" + time[i], OBJPROP_COLOR, clrAqua);
+          ObjectCreate(0, "taglc" + time[i], OBJ_TREND, 0, time[i], lossCut, time[i - 1], lossCut);
+          //--- set text font
+          ObjectSetInteger(0, "taglc" + time[i], OBJPROP_WIDTH, 2);
+          //--- set color
+          ObjectSetInteger(0, "taglc" + time[i], OBJPROP_COLOR, clrAqua);
 
 
-          }
         }
       }
+    }
 
-    
+
     //!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -1089,19 +963,19 @@ int OnCalculate(const int rates_total,
     ObjectSetInteger(0, "trades", OBJPROP_XDISTANCE, 10);
     ObjectSetInteger(0, "trades", OBJPROP_YDISTANCE, 213);
     //--- set the text
-    ObjectSetString(0, "trades", OBJPROP_TEXT, trades + " trades "+days+" days");
+    ObjectSetString(0, "trades", OBJPROP_TEXT, trades + " trades " + days + " days");
     //--- set text font
     ObjectSetInteger(0, "trades", OBJPROP_FONTSIZE, 10);
     //--- set color
     ObjectSetInteger(0, "trades", OBJPROP_COLOR, clrWhite);
-    
-     ObjectCreate(0, "winloserate", OBJ_LABEL, 0, 0, 0);
+
+    ObjectCreate(0, "winloserate", OBJ_LABEL, 0, 0, 0);
     ObjectSetInteger(0, "winloserate", OBJPROP_XDISTANCE, 10);
     ObjectSetInteger(0, "winloserate", OBJPROP_YDISTANCE, 225);
     //--- set the text
-    
-    double winDayRate = winDays/ days;
-    ObjectSetString(0, "winloserate", OBJPROP_TEXT, winDays + " : "+loseDays+" "+winDayRate);
+
+    double winDayRate = winDays / days;
+    ObjectSetString(0, "winloserate", OBJPROP_TEXT, winDays + " : " + loseDays + " " + winDayRate);
     //--- set text font
     ObjectSetInteger(0, "winloserate", OBJPROP_FONTSIZE, 10);
     //--- set color
@@ -1188,7 +1062,7 @@ void showPipsDay(datetime timei, double closei, double pips)
 {
   double pips1 = MathRound(pips * 10) / 10;
 
-  if(pips>0) winDays++;
+  if (pips > 0) winDays++;
   else loseDays++;
 
   ObjectCreate(0, "pipsD" + timei, OBJ_TEXT, 0, timei, closei + 20 * pip);
@@ -1230,17 +1104,25 @@ void OnTimer()
 }
 
 string DayToString(ENUM_DAY_OF_WEEK day)
+{
+  switch (day)
   {
-   switch(day)
-     {
-      case SUNDAY:    return "Sunday";
-      case MONDAY:    return "Monday";
-      case TUESDAY:   return "Tuesday";
-      case WEDNESDAY: return "Wednesday";
-      case THURSDAY:  return "Thursday";
-      case FRIDAY:    return "Friday";
-      case SATURDAY:  return "Saturday";
-      default:        return "Unknown day of week";
-     }
-   return "";
+    case SUNDAY:
+      return "Sunday";
+    case MONDAY:
+      return "Monday";
+    case TUESDAY:
+      return "Tuesday";
+    case WEDNESDAY:
+      return "Wednesday";
+    case THURSDAY:
+      return "Thursday";
+    case FRIDAY:
+      return "Friday";
+    case SATURDAY:
+      return "Saturday";
+    default:
+      return "Unknown day of week";
   }
+  return "";
+}

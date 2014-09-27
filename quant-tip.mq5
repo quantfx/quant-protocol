@@ -17,14 +17,14 @@ int MAperiod = 25000;
 
 int LC;
 int LC_EURUSD = 24; //24
-int LC_USDJPY = 16; //19
-int LC_GBPUSD = 24;
+int LC_USDJPY = 19; //19
+int LC_GBPUSD = 35;
 int LC_USDCHF = 24;
 
 int Spike;
-int Spike_EURUSD = 22;// 24;//30
+int Spike_EURUSD = 24;//30
 int Spike_USDJPY = 15;//15 /23
-int Spike_GBPUSD = 22;
+int Spike_GBPUSD = 20;
 int Spike_USDCHF = 25;
 
 int tradeLimitTK = 99;
@@ -461,7 +461,7 @@ int OnCalculate(const int rates_total,
     
       
    
-      if ((hhmm <= 1600) || (hhmm >= 1700))
+  //    if ((hhmm <= 1600) || (hhmm >= 1700))
       { 
         if ((mm == 00) || (mm == 30))
         { 
@@ -547,231 +547,7 @@ int OnCalculate(const int rates_total,
  
       }
 
-      if (hhmm == 1500)
-      {
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-        tz = "NY";
-      }
-
-      if ((hhmm == 1545))
-      {
-
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-
-      if ((hhmm >= 1535) && (hhmm <= 1615))
-      {
-        if (D >= Spike)
-        {
-          if (dma < 0)
-          {
-            if (open[i] > U)
-            {
-               if(pos == "flat")    
-               sign0 = "short";
-               
-               if(pos == "long")
-               sign = "flat";       
-            }
-            
-            if (open[i] < L)
-            {         
-               if(pos == "short")
-               sign0 = "longFlat";       
-            }
-            
-          } 
-
-          if (dma > 0)
-          {
-            if (open[i] < L)
-             {
-               if(pos == "flat")    
-               sign0 = "long";
-               
-               if(pos == "short")
-               sign = "flat";       
-            }
-            
-            if (open[i] > U)
-            { 
-               if(pos == "long")
-               sign0 = "shortFlat";       
-            }
-            
-            
-          }
-        }
-      }
-      if ((hhmm == 1615))
-      {
-
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-      
-      if ((hhmm == 1630))
-      {
-
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-
-      if ((hhmm >= 1630) && (hhmm <= 1635))
-      {
-        if (D >= Spike)
-        {
-          if (dma < 0)
-          {
-            if (open[i] > U)
-            {
-               if(pos == "flat")    
-               sign0 = "short";
-               
-               if(pos == "long")
-               sign = "flat";       
-            }
-            
-            if (open[i] < L)
-            {         
-               if(pos == "short")
-               sign0 = "longFlat";       
-            }
-            
-          } 
-
-          if (dma > 0)
-          {
-            if (open[i] < L)
-             {
-               if(pos == "flat")    
-               sign0 = "long";
-               
-               if(pos == "short")
-               sign = "flat";       
-            }
-            
-            if (open[i] > U)
-            { 
-               if(pos == "long")
-               sign0 = "shortFlat";       
-            }
-            
-            
-          }
-        }
-
-      }
-
-      if (hhmm == 1700)
-      {
-        tz = "NY2";
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-      //  if (pos == "flat")
-
-      if ((hhmm >= 1700) && (hhmm <= 1705))
-      {
-        if (D >= Spike)
-        {
-          if (dma < 0)
-          {
-            if (open[i] > U)
-            {
-               if(pos == "flat")    
-               sign0 = "short";
-               
-               if(pos == "long")
-               sign = "flat";       
-            }
-            
-            if (open[i] < L)
-            {         
-               if(pos == "short")
-               sign0 = "longFlat";       
-            }
-            
-          } 
-
-          if (dma > 0)
-          {
-            if (open[i] < L)
-             {
-               if(pos == "flat")    
-               sign0 = "long";
-               
-               if(pos == "short")
-               sign = "flat";       
-            }
-            
-            if (open[i] > U)
-            { 
-               if(pos == "long")
-               sign0 = "shortFlat";       
-            }
-            
-            
-          }
-        }
-
-      }
-
-
-      if (hhmm == 1730)
-      { 
-        ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
-        ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
-      }
-      
-      if ((hhmm >= 1715) && (hhmm <= 1745))
-      {
-        if (D >= Spike)
-        {
-          if (dma < 0)
-          {
-            if (open[i] > U)
-            {
-               if(pos == "flat")    
-               sign0 = "short";
-               
-               if(pos == "long")
-               sign = "flat";       
-            }
-            
-            if (open[i] < L)
-            {         
-               if(pos == "short")
-               sign0 = "longFlat";       
-            }
-            
-          } 
-
-          if (dma > 0)
-          {
-            if (open[i] < L)
-             {
-               if(pos == "flat")    
-               sign0 = "long";
-               
-               if(pos == "short")
-               sign = "flat";       
-            }
-            
-            if (open[i] > U)
-            { 
-               if(pos == "long")
-               sign0 = "shortFlat";       
-            }
-            
-            
-          }
-        }
-
-      }
-
+    
 
       if ((hhmm >= 2000))
       {
