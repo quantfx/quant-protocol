@@ -191,8 +191,6 @@ void OnInit()
     Alert("timeframe must be 1 Min Chart! to trade");
   }
 
-  EventSetTimer(1);
-
   ObjectsDeleteAll(0, 0, -1);
 
 
@@ -992,18 +990,11 @@ void showPipsWeek(datetime timei, double closei, double pips)
 }
 
 void OnDeinit(const int reason)
-{
-  EventKillTimer();
+{ 
   ObjectsDeleteAll(0, 0, -1);
   IndicatorRelease(MA_handle);
-
 }
-
-void OnTimer()
-{
-
-
-}
+ 
 
 string DayToString(ENUM_DAY_OF_WEEK day)
 {
