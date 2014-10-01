@@ -1,15 +1,15 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.09.28   02:45";
+string ver = "ver.2014.10.01   18:00";
 
 //--- input parameters
 input double size = 0.12;
 
-bool test = true;
+bool test = false;
 
 int real_limit = 10000;
-int full_limit = 97000;
+int full_limit = 90000;
 int limit;
 
 int DonchianPeriod = 47; //Period of averaging
@@ -26,12 +26,7 @@ int Spike_EURUSD = 24; //30
 int Spike_USDJPY = 15; //15 /23
 int Spike_GBPUSD = 24;
 int Spike_EURJPY = 15;
-
-int tradeLimitTK = 99;
-int tradeLimitLD = 99;
-int tradeLimitNY = 99;
-int tradeLimitNY2 = 99;
-int tradeLimitNY3 = 99;
+ 
 
 double sumDay;
 double sumWeek;
@@ -637,41 +632,8 @@ int OnCalculate(const int rates_total,
 
       if (low[i] <= lossCut)
       {
-        if (tz == "NY3")
-        {
-          if ((tCountNY3 < tradeLimitNY3) && (dma < 0))
-            sign = "short";
-          else
-            sign = "flat";
-        }
-        else if (tz == "NY2")
-        {
-          if ((tCountNY2 < tradeLimitNY2) && (dma < 0))
-            sign = "short";
-          else
-            sign = "flat";
-        }
-        else if (tz == "NY")
-        {
-          if ((tCountNY < tradeLimitNY) && (dma < 0))
-            sign = "short";
-          else
-            sign = "flat";
-        }
-        else if (tz == "LD")
-        {
-          if ((tCountLD < tradeLimitLD) && (dma < 0))
-            sign = "short";
-          else
-            sign = "flat";
-        }
-        else
-        {
-          if ((tCountTK < tradeLimitTK) && (dma < 0))
-            sign = "short";
-          else
-            sign = "flat";
-        }
+        sign = "flat";
+        
         strike = lossCut;
 
         lossCut = 999;
@@ -701,41 +663,8 @@ int OnCalculate(const int rates_total,
 
       if (high[i] >= lossCut)
       {
-        if (tz == "NY3")
-        {
-          if ((tCountNY3 < tradeLimitNY3) && (dma > 0))
-            sign = "long";
-          else
-            sign = "flat";
-        }
-        else if (tz == "NY2")
-        {
-          if ((tCountNY2 < tradeLimitNY2) && (dma > 0))
-            sign = "long";
-          else
-            sign = "flat";
-        }
-        else if (tz == "NY")
-        {
-          if ((tCountNY < tradeLimitNY) && (dma > 0))
-            sign = "long";
-          else
-            sign = "flat";
-        }
-        else if (tz == "LD")
-        {
-          if ((tCountLD < tradeLimitLD) && (dma > 0))
-            sign = "long";
-          else
-            sign = "flat";
-        }
-        else
-        {
-          if ((tCountTK < tradeLimitTK) && (dma > 0))
-            sign = "long";
-          else
-            sign = "flat";
-        }
+        
+        sign = "flat";  
 
         strike = lossCut;
 
@@ -794,26 +723,11 @@ int OnCalculate(const int rates_total,
 
       }
 
-      else if (((tz == "TK") && (tCountTK < tradeLimitTK)) ||
-        ((tz == "LD") && (tCountLD < tradeLimitLD)) ||
-        ((tz == "NY") && (tCountNY < tradeLimitNY)) ||
-        ((tz == "NY2") && (tCountNY2 < tradeLimitNY2)) ||
-        ((tz == "NY3") && (tCountNY3 < tradeLimitNY3)))
+      else  
       {
         if (sign == "long")
         {
           pos = sign;
-
-          if (tz == "NY3")
-            tCountNY3++;
-          else if (tz == "NY2")
-            tCountNY2++;
-          else if (tz == "NY")
-            tCountNY++;
-          else if (tz == "LD")
-            tCountLD++;
-          else
-            tCountTK++;
 
           sign0 = "flat";
 
@@ -838,19 +752,7 @@ int OnCalculate(const int rates_total,
         if (sign == "short")
         {
           pos = sign;
-
-          if (tz == "NY3")
-            tCountNY3++;
-          else if (tz == "NY2")
-            tCountNY2++;
-          else if (tz == "NY")
-            tCountNY++;
-          else if (tz == "LD")
-            tCountLD++;
-          else
-            tCountTK++;
-
-
+  
           sign0 = "flat";
 
           if (entry != 0)
