@@ -386,8 +386,7 @@ int OnCalculate(const int rates_total,
 
       tz = "TK";
 
-
-      // dma = MABuffer[i] - MABuffer[i - 60*24];
+      //dma = MABuffer[i] - MABuffer[i - 60*24];
 
       ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
 
@@ -557,8 +556,7 @@ int OnCalculate(const int rates_total,
         sign = "flat"; // must be directly to sign not sign0
         sign0 = "flat";
         strike = open[i];
-        
-        
+         
         dma = MABuffer[i] - MABuffer[i - 60*24*5];
       }
     }
