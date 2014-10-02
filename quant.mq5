@@ -1,7 +1,7 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.10.02   15:00";
+string ver = "ver.2014.10.02   18:30";
 
 //--- input parameters
 input double size = 0.12;
@@ -18,7 +18,7 @@ int MAperiod = 25000;
 int LC;
 int LC_EURUSD = 24; //24
 int LC_USDJPY = 19; //19
-int LC_GBPUSD = 24;
+int LC_GBPUSD = 26;
 int LC_EURJPY = 19;
 
 int Spike;
