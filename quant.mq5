@@ -1,7 +1,7 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.10.02   18:30";
+string ver = "ver.2014.10.08   11:30";
 
 //--- input parameters
 input double size = 0.12;
@@ -9,7 +9,7 @@ input double size = 0.12;
 bool test = false;
 
 int real_limit = 10000;
-int full_limit = 95000;
+int full_limit = 98000;
 int limit;
 
 int DonchianPeriod = 47; //Period of averaging
@@ -19,13 +19,13 @@ int LC;
 int LC_EURUSD = 24; //24
 int LC_USDJPY = 19; //19
 int LC_GBPUSD = 26;
-int LC_EURJPY = 19;
+int LC_EURJPY = 22;
 
 int Spike;
 int Spike_EURUSD = 24; //30
 int Spike_USDJPY = 15; //15 /23
 int Spike_GBPUSD = 24;
-int Spike_EURJPY = 15;
+int Spike_EURJPY = 20;
  
 
 double sumDay;
@@ -450,6 +450,7 @@ int OnCalculate(const int rates_total,
 
     if (D >= Spike)
     {
+      if( MABuffer[i]>open[i] )
       if (dma < 0)
         if (open[i] > U)
         {
@@ -459,7 +460,7 @@ int OnCalculate(const int rates_total,
           if (pos == "long")
             sign = "flat";
         }
-
+      if( MABuffer[i]<open[i] )
       if (dma > 0)
         if (open[i] < L)
         {
@@ -497,8 +498,11 @@ int OnCalculate(const int rates_total,
 
       if (pos == "flat")
       {
+        if( MABuffer[i]>open[i] )
         if (dma < 0)
           sign0 = "short";
+          
+        if( MABuffer[i]<open[i] ) 
         if (dma > 0)
           sign0 = "long";
       }
