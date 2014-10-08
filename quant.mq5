@@ -8,7 +8,7 @@ input double size = 0.12;
 
 bool test = false;
 
-int real_limit = 10000;
+int real_limit = 20000;
 int full_limit = 98000;
 int limit;
 
