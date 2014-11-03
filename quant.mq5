@@ -1,7 +1,7 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.10.08   11:30";
+string ver = "ver.2014.11.03   11:30";
 
 //--- input parameters
 input double size = 0.12;
@@ -408,7 +408,7 @@ int OnCalculate(const int rates_total,
       //--- set color
       ObjectSetInteger(0, "dtw" + time[i], OBJPROP_COLOR, clrGray);
 
-      if (date == 1)
+      if (date <=5)
       {
         ObjectCreate(0, "dt1" + time[i], OBJ_TEXT, 0, time[i], close[i] - 35 * pip);
         //--- set the text
@@ -553,15 +553,26 @@ int OnCalculate(const int rates_total,
       tz = "NY3";
     }
 
-    if (hhmm >= 2300)
+    if (hhmm >= 2200)
     {
       if (dayofweek == 5)
       {
         sign = "flat"; // must be directly to sign not sign0
         sign0 = "flat";
         strike = open[i];
-         
+        
+       if(hhmm == 2200)
+{
         dma = MABuffer[i] - MABuffer[i - 60*24*5];
+        
+        ObjectCreate(0, "dma" + time[i], OBJ_TEXT, 0, time[i], close[i]+  35 * pip);
+        //--- set the text
+        ObjectSetString(0, "dma" + time[i], OBJPROP_TEXT, "dMA="+MathRound(dma/pip*100)/100);
+        //--- set text font
+        ObjectSetInteger(0, "dma" + time[i], OBJPROP_FONTSIZE, 20);
+        //--- set color
+        ObjectSetInteger(0, "dma" + time[i], OBJPROP_COLOR, Orange);
+      }
       }
     }
 
