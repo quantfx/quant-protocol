@@ -1,7 +1,7 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.11.03   23:30";
+string ver = "ver.2014.11.17   06:30";
 
 //--- input parameters
 input double size = 0.12;
@@ -9,21 +9,21 @@ input double size = 0.12;
 bool test = false;
 
 int real_limit = 20000;
-int full_limit = 98000;
+int full_limit = 130000;
 int limit;
 
-int DonchianPeriod = 47; //Period of averaging
+int DonchianPeriod = 50; //Period of averaging
 int MAperiod = 25000;
 
 int LC;
 int LC_EURUSD = 24; //24
-int LC_USDJPY = 19; //19
-int LC_GBPUSD = 26;
+int LC_USDJPY = 26; //19
+int LC_GBPUSD = 26;//26
 int LC_EURJPY = 22;
 
 int Spike;
 int Spike_EURUSD = 24; //30
-int Spike_USDJPY = 15; //15 /23
+int Spike_USDJPY = 24; //15 /23
 int Spike_GBPUSD = 24;
 int Spike_EURJPY = 20;
  
@@ -485,6 +485,33 @@ int OnCalculate(const int rates_total,
 
 
     //----------
+    
+    if (hhmm == 0035)
+    {
+
+      tz = "LD";
+      ObjectCreate(0, "vline" + time[i], OBJ_VLINE, 0, time[i], 0);
+      ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
+
+    }
+
+    if ((hhmm == 0035))
+    {
+ 
+
+      if (pos == "flat")
+      {
+        if( MABuffer[i]>open[i] )
+        if (dma < 0)
+          sign0 = "short";
+          
+        if( MABuffer[i]<open[i] ) 
+        if (dma > 0)
+          sign0 = "long";
+      }
+
+    }
+    
 
     if (hhmm == 0935)
     {
@@ -497,15 +524,7 @@ int OnCalculate(const int rates_total,
 
     if ((hhmm == 0935))
     {
-
-      double d0 = open[i] - ld0;
-      double d1 = open[i] - open[i - 20];
-
-      double d01;
-      if (MathAbs(d0) > MathAbs(d1))
-        d01 = d0;
-      else
-        d01 = d1;
+ 
 
       if (pos == "flat")
       {
