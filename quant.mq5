@@ -1,7 +1,7 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.11.17   06:30";
+string ver = "ver.2014.11.18   06:30";
 
 //--- input parameters
 input double size = 0.12;
@@ -12,19 +12,19 @@ int real_limit = 20000;
 int full_limit = 130000;
 int limit;
 
-int DonchianPeriod = 50; //Period of averaging
+int DonchianPeriod = 40; //Period of averaging
 int MAperiod = 25000;
 
 int LC;
 int LC_EURUSD = 24; //24
-int LC_USDJPY = 26; //19
+int LC_USDJPY = 27; //19
 int LC_GBPUSD = 26;//26
 int LC_EURJPY = 22;
 
 int Spike;
-int Spike_EURUSD = 24; //30
-int Spike_USDJPY = 24; //15 /23
-int Spike_GBPUSD = 24;
+int Spike_EURUSD = 15; //30
+int Spike_USDJPY = 17; //15 /23
+int Spike_GBPUSD = 17;
 int Spike_EURJPY = 20;
  
 
