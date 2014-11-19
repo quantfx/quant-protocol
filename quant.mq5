@@ -1,7 +1,7 @@
 #property indicator_chart_window
 //mklink /D Files R:\Files
 
-string ver = "ver.2014.11.18   06:30";
+string ver = "ver.2014.11.19   06:30";
 
 //--- input parameters
 input double size = 0.12;
@@ -12,20 +12,28 @@ int real_limit = 20000;
 int full_limit = 130000;
 int limit;
 
-int DonchianPeriod = 40; //Period of averaging
+int DonchianPeriod = 30; //Period of averaging
 int MAperiod = 25000;
 
 int LC;
-int LC_EURUSD = 24; //24
-int LC_USDJPY = 27; //19
-int LC_GBPUSD = 26;//26
+int LC_EURUSD = 28; //24
+int LC_USDJPY = 28; //19
+int LC_GBPUSD = 28;//26
 int LC_EURJPY = 22;
 
 int Spike;
-int Spike_EURUSD = 15; //30
-int Spike_USDJPY = 17; //15 /23
-int Spike_GBPUSD = 17;
+int Spike_EURUSD = 10; //30
+int Spike_USDJPY = 10; //15 /23
+int Spike_GBPUSD = 10;
 int Spike_EURJPY = 20;
+ 
+int Spike2;
+int Spike_EURUSD2 = 20; //30
+int Spike_USDJPY2 = 20; //15 /23
+int Spike_GBPUSD2 = 20;
+int Spike_EURJPY2 = 20;
+
+double spikeedge = 0.1;
  
 
 double sumDay;
@@ -52,14 +60,14 @@ double lossCutToday0;
 double entryToday0;
 double edgeToday0;
 
-#property indicator_buffers 3
+#property indicator_buffers 5
 //---- 3 plots are used
-#property indicator_plots 3
+#property indicator_plots 5
 //+-----------------------------------+
 //|  parameters of indicator drawing  |
 //+-----------------------------------+
 //---- drawing of the indicator as a line
-#property indicator_type1 DRAW_NONE
+#property indicator_type1 DRAW_LINE
 //---- use olive color for the indicator line
 #property indicator_color1 LightGreen
 //---- indicator line is a solid curve
@@ -70,7 +78,7 @@ double edgeToday0;
 #property indicator_label1 "Upper Donchian"
 
 //---- drawing of the indicator as a line
-#property indicator_type2 DRAW_NONE
+#property indicator_type2  DRAW_LINE
 //---- use pale violet DeepPink color for the indicator line
 #property indicator_color2 Violet
 //---- indicator line is a solid curve
@@ -83,14 +91,38 @@ double edgeToday0;
 
 //---- drawing of the indicator as a line
 #property indicator_type3 DRAW_LINE
-//---- use pale violet DeepPink color for the indicator line
-#property indicator_color3 OliveDrab
+//---- use olive color for the indicator line
+#property indicator_color3 LightGreen
 //---- indicator line is a solid curve
 #property indicator_style3 STYLE_SOLID
 //---- indicator line width is equal to 1
 #property indicator_width3 1
 //---- indicator label display
-#property indicator_label3 "MA"
+#property indicator_label3 "Upper Donchian"
+
+//---- drawing of the indicator as a line
+#property indicator_type4  DRAW_LINE
+//---- use pale violet DeepPink color for the indicator line
+#property indicator_color4 Violet
+//---- indicator line is a solid curve
+#property indicator_style4 STYLE_SOLID
+//---- indicator line width is equal to 1
+#property indicator_width4 1
+//---- indicator label display
+#property indicator_label4 "Lower Donchian"
+
+
+
+//---- drawing of the indicator as a line
+#property indicator_type5 DRAW_LINE
+//---- use pale violet DeepPink color for the indicator line
+#property indicator_color5 Orange
+//---- indicator line is a solid curve
+#property indicator_style5 STYLE_SOLID
+//---- indicator line width is equal to 1
+#property indicator_width5 1
+//---- indicator label display
+#property indicator_label5 "MA"
 //+-----------------------------------+
 //|  INPUT PARAMETERS OF THE INDICATOR|
 //+-----------------------------------+
@@ -98,6 +130,10 @@ double edgeToday0;
 //---- indicator buffers
 double UpperBuffer[];
 double LowerBuffer[];
+
+double UpperBuffer2[];
+double LowerBuffer2[];
+
 double MABuffer[];
 int MA_handle;
 //+------------------------------------------------------------------+
@@ -207,21 +243,25 @@ void OnInit()
   {
     LC = LC_EURUSD;
     Spike = Spike_EURUSD;
+    Spike2 = Spike_EURUSD2;
   }
   if (Symbol() == "USDJPY")
   {
     LC = LC_USDJPY;
     Spike = Spike_USDJPY;
+    Spike2 = Spike_USDJPY2;
   }
   if (Symbol() == "GBPUSD")
   {
     LC = LC_GBPUSD;
     Spike = Spike_GBPUSD;
+    Spike2 = Spike_GBPUSD2;
   }
   if (Symbol() == "EURJPY")
   {
     LC = LC_EURJPY;
     Spike = Spike_EURJPY;
+    Spike2 = Spike_EURJPY2;
   }
 
 
@@ -264,6 +304,25 @@ void OnInit()
   PlotIndexSetString(1, PLOT_LABEL, "Lower Donchian");
   //---- setting values of the indicator that won't be visible on the chart
   PlotIndexSetDouble(1, PLOT_EMPTY_VALUE, EMPTY_VALUE);
+  
+    //---- turning a dynamic array into an indicator buffer
+  SetIndexBuffer(2, UpperBuffer2, INDICATOR_DATA);
+  //---- shifting the start of drawing of the indicator 1
+  PlotIndexSetInteger(2, PLOT_DRAW_BEGIN, DonchianPeriod - 1);
+  //--- create label to display in DataWindow
+  PlotIndexSetString(2, PLOT_LABEL, "Upper Donchian2");
+  //---- setting valus of the indicator that won't be visible on the chart
+  PlotIndexSetDouble(2, PLOT_EMPTY_VALUE, EMPTY_VALUE);
+
+  //---- turning a dynamic array into an indicator buffer
+  SetIndexBuffer(3, LowerBuffer2, INDICATOR_DATA);
+  //---- shifting the start of drawing of the indicator 3
+  PlotIndexSetInteger(3, PLOT_DRAW_BEGIN, DonchianPeriod - 1);
+  //--- create label to display in DataWindow
+  PlotIndexSetString(3, PLOT_LABEL, "Lower Donchian2");
+  //---- setting values of the indicator that won't be visible on the chart
+  PlotIndexSetDouble(3, PLOT_EMPTY_VALUE, EMPTY_VALUE);
+
 
   //---- initialization of variable for indicator short name
   string shortname;
@@ -276,13 +335,13 @@ void OnInit()
 
 
   //---- turning a dynamic array into an indicator buffer
-  SetIndexBuffer(2, MABuffer, INDICATOR_DATA);
+  SetIndexBuffer(4, MABuffer, INDICATOR_DATA);
   //---- shifting the start of drawing of the indicator 3
-  PlotIndexSetInteger(2, PLOT_DRAW_BEGIN, MAperiod - 1);
+  PlotIndexSetInteger(4, PLOT_DRAW_BEGIN, MAperiod - 1);
   //--- create label to display in DataWindow
-  PlotIndexSetString(2, PLOT_LABEL, "MA");
+  PlotIndexSetString(4, PLOT_LABEL, "MA");
   //---- setting values of the indicator that won't be visible on the chart
-  PlotIndexSetDouble(2, PLOT_EMPTY_VALUE, EMPTY_VALUE);
+  PlotIndexSetDouble(4, PLOT_EMPTY_VALUE, EMPTY_VALUE);
 
   MA_handle = iMA(Symbol(), 0, MAperiod, 0, MODE_SMA, PRICE_TYPICAL);
 
@@ -438,10 +497,19 @@ int OnCalculate(const int rates_total,
 
     double D = (UpperBuffer[i] - LowerBuffer[i]) / pip;
 
-    double L = LowerBuffer[i] + (UpperBuffer[i] - LowerBuffer[i]) * 0.1;
+    double L = LowerBuffer[i] + (UpperBuffer[i] - LowerBuffer[i]) * spikeedge;
 
-    double U = UpperBuffer[i] - (UpperBuffer[i] - LowerBuffer[i]) * 0.1;
+    double U = UpperBuffer[i] - (UpperBuffer[i] - LowerBuffer[i]) * spikeedge;
 
+
+    UpperBuffer2[i] = high[iHighest(high, DonchianPeriod*2  , i)];
+    LowerBuffer2[i] = low[iLowest(low, DonchianPeriod*2, i)];
+
+    double D2 = (UpperBuffer2[i] - LowerBuffer2[i]) / pip;
+
+    double L2 = LowerBuffer2[i] + (UpperBuffer2[i] - LowerBuffer2[i]) * spikeedge;
+
+    double U2 = UpperBuffer2[i] - (UpperBuffer2[i] - LowerBuffer2[i]) * spikeedge;
 
     if (hhmm == 0900)
     {
@@ -459,7 +527,7 @@ int OnCalculate(const int rates_total,
       ObjectSetInteger(0, "vline" + time[i], OBJPROP_COLOR, clrGray);
     }
 
-    if (D >= Spike)
+    if ((D >= Spike)|| (D2 >= Spike2))
     {
       if( MABuffer[i]>open[i] )
       if (dma < 0)
